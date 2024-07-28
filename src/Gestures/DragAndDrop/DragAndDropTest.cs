@@ -20,12 +20,13 @@ namespace DragAndDrop
         public void SetUp()
         {
             var serverUri = new Uri("http://127.0.0.1:4723"); // Use the CI server's URL if different
+            var appPath = Environment.GetEnvironmentVariable("APK_PATH") ?? "./apk/ApiDemos-debug.apk";
             var androidOptions = new AppiumOptions
             {
                 PlatformName = "Android",
                 AutomationName = "UIAutomator2",
                 DeviceName = "Android Emulator",
-                App = @"D:\ApiDemos-debug.apk" // Ensure this path is valid in your CI environment
+                App = appPath
             };
             _driver = new AndroidDriver(serverUri, androidOptions);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
