@@ -70,7 +70,7 @@ jobs:
         run: |
           bootanim=""
           failcounter=0
-          timeout_in_sec=300
+          timeout_in_sec=600
           until [[ "$bootanim" =~ "stopped" ]]; do
             bootanim=`adb shell getprop init.svc.bootanim 2>&1`
             if [[ "$bootanim" =~ "stopped" ]]; then
@@ -92,7 +92,7 @@ jobs:
 
       - name: Verify Appium Server is running
         run: |
-          curl --silent --fail http://127.0.0.1:4723/wd/hub/status || exit 1
+          curl --silent --fail http://127.0.0.1:4723/status || exit 1
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
