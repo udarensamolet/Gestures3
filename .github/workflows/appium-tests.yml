@@ -73,7 +73,7 @@ jobs:
           failcounter=0
           timeout_in_sec=300
           until [[ "$bootanim" =~ "stopped" ]]; do
-            bootanim=`adb -e shell getprop init.svc.bootanim 2>&1`
+            bootanim=`adb shell getprop init.svc.bootanim 2>&1`
             if [[ "$bootanim" =~ "stopped" ]]; then
               echo "Emulator boot animation stopped."
               break
@@ -89,6 +89,11 @@ jobs:
           adb shell settings put global window_animation_scale 0.0
           adb shell settings put global transition_animation_scale 0.0
           adb shell settings put global animator_duration_scale 0.0
+          adb shell input keyevent 82  # Unlock screen
+
+      - name: Verify Appium Server is running
+        run: |
+          curl --silent --fail http://127.0.0.1:4723/wd/hub/status || exit 1
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
