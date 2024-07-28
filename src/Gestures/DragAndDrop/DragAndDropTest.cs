@@ -20,23 +20,18 @@ namespace DragAndDrop
         [OneTimeSetUp]
         public void SetUp()
         {
-            _appiumLocalService = new AppiumServiceBuilder()
-                .WithIPAddress("127.0.0.1")
-                .UsingPort(4723)
-                .Build();
-            _appiumLocalService.Start();
+            var serverUri = new Uri("http://127.0.0.1:4723/wd/hub"); // Use the CI server's URL if different
 
-            var androidOptions = new AppiumOptions
-            {
-                PlatformName = "Android",
-                AutomationName = "UIAutomator2",
-                DeviceName = "Android Emulator",
-                App = @"./ApiDemos-debug.apk"  
-            };
+    var androidOptions = new AppiumOptions();
+    androidOptions.PlatformName = "Android";
+    androidOptions.AutomationName = "UIAutomator2";
+    androidOptions.DeviceName = "Android Emulator";
+    androidOptions.App = @"D:\ApiDemos-debug.apk";
+    androidOptions.AddAdditionalCapability(MobileCapabilityType.NewCommandTimeout, 300); // Set a generous timeout
 
-            _driver = new AndroidDriver(_appiumLocalService.ServiceUrl, androidOptions);
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-        }
+    _driver = new AndroidDriver(serverUri, androidOptions);
+    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
+}
 
 
 
