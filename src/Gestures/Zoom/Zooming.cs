@@ -105,7 +105,7 @@ namespace ZoomGestures
         public void TearDown()
         {
             _driver.Quit();
-            _appiumLocalService.Dispose();
+            
         }
     }
 }
