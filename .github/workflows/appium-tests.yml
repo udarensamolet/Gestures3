@@ -28,7 +28,7 @@ jobs:
           node-version: '18'  # Use a compatible node version
 
       - name: Install curl
-        run: sudo apt-get install -y curl
+        run: sudo apt-get update && sudo apt-get install -y curl
 
       - name: Install and Run Appium Server
         run: |
