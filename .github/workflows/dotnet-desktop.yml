@@ -55,9 +55,6 @@ jobs:
       - name: Verify Appium Server is running
         run: curl --silent --fail "http://${{ env.APPIUM_TEST_SERVER_HOST }}:${{ env.APPIUM_TEST_SERVER_PORT }}/status" || exit 1
 
-      - name: Copy APK to working directory
-        run: cp ./apk/ApiDemos-debug.apk 
-
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
 
@@ -115,6 +112,9 @@ jobs:
           adb shell settings put global transition_animation_scale 0.0
           adb shell settings put global animator_duration_scale 0.0
           adb shell input keyevent 82  # Unlock screen
+
+      - name: Copy APK to working directory
+        run: cp ./apk/ApiDemos-debug.apk .
 
       - name: Run tests
         run: dotnet test src/Gestures/Gestures.sln --logger:"trx;LogFileName=test_results.trx"
