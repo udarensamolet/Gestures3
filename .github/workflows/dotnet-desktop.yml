@@ -12,6 +12,12 @@ jobs:
   appium-test:
     runs-on: macos-12
     name: Appium Test
+    env:
+      CI: true
+      ANDROID_AVD: emulator
+      APPIUM_TEST_SERVER_PORT: 4723
+      APPIUM_TEST_SERVER_HOST: 127.0.0.1
+      APK_PATH: ./apk/ApiDemos-debug.apk
 
     steps:
       - name: Checkout
@@ -33,26 +39,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'    
 
-      - name: Install and Run Appium Server
+      - name: Install Appium Server and Drivers
         run: |
           npm install -g appium@2.11.2
           appium driver install uiautomator2
+          appium driver install chromedriver
 
-      - name: Start Appium Server with CORS
-        id: start_appium
+      - name: Start Appium Server
         run: |
-          IP_ADDRESS=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print $2}' | head -n 1)
-          echo "Appium server IP: $IP_ADDRESS"
-          echo "APPIUM_SERVER_URI=http://$IP_ADDRESS:4723" >> $GITHUB_ENV
-          appium --allow-cors &
+          appium --port $APPIUM_TEST_SERVER_PORT --address $APPIUM_TEST_SERVER_HOST --allow-cors &
           sleep 10  # Wait for the server to start
+        env:
+          APPIUM_TEST_SERVER_PORT: ${{ env.APPIUM_TEST_SERVER_PORT }}
+          APPIUM_TEST_SERVER_HOST: ${{ env.APPIUM_TEST_SERVER_HOST }}
 
       - name: Verify Appium Server is running
-        run: |
-          echo "Verifying server at $APPIUM_SERVER_URI"
-          curl --silent --fail "$APPIUM_SERVER_URI/status" || exit 1
-        env:
-          APPIUM_SERVER_URI: ${{ env.APPIUM_SERVER_URI }}
+        run: curl --silent --fail "http://${{ env.APPIUM_TEST_SERVER_HOST }}:${{ env.APPIUM_TEST_SERVER_PORT }}/status" || exit 1
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
@@ -115,21 +117,12 @@ jobs:
           adb shell settings put global animator_duration_scale 0.0
           adb shell input keyevent 82  # Unlock screen
 
-      - name: Extract and Set Host and Port
-        run: |
-          echo "Extracting host and port from APPIUM_SERVER_URI"
-          echo "APPIUM_HOST=$(echo $APPIUM_SERVER_URI | sed -e 's|^[^:]*://||' -e 's|:.*$||')" >> $GITHUB_ENV
-          echo "APPIUM_PORT=$(echo $APPIUM_SERVER_URI | sed -e 's|.*:||')" >> $GITHUB_ENV
-        shell: bash
-        env:
-          APPIUM_SERVER_URI: ${{ env.APPIUM_SERVER_URI }}
-
       - name: Run tests
         run: dotnet test src/Gestures/Gestures.sln --logger:"trx;LogFileName=test_results.trx"
         env:
-          APPIUM_HOST: ${{ env.APPIUM_HOST }}
-          APPIUM_PORT: ${{ env.APPIUM_PORT }}
-          APK_PATH: ./apk/ApiDemos-debug.apk
+          APPIUM_TEST_SERVER_PORT: ${{ env.APPIUM_TEST_SERVER_PORT }}
+          APPIUM_TEST_SERVER_HOST: ${{ env.APPIUM_TEST_SERVER_HOST }}
+          APK_PATH: ${{ env.APK_PATH }}
 
       - name: Archive test results
         if: always()
