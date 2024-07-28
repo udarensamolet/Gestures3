@@ -97,7 +97,7 @@ jobs:
 
       - name: Verify Appium Server is running
         run: |
-          curl --silent --fail http://127.0.0.1:4723/status || exit 1
+          curl --silent --fail http://192.168.64.23:4723/status || exit 1
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
