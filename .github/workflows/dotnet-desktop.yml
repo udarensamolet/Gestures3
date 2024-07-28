@@ -32,10 +32,10 @@ jobs:
           npm install -g appium@2.11.2
           appium driver install uiautomator2
 
-      - name: Start Appium Server
+      - name: Start Appium Server with CORS
         run: |
-         appium &
-         sleep 10  # Give some time for the server to start
+          appium --allow-cors &
+          sleep 10  # Adjust the sleep duration based on how long it takes for the server to be ready
                    
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
