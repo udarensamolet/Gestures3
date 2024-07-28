@@ -1,59 +1,64 @@
-
+using NUnit.Framework;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
+using OpenQA.Selenium.Appium.Enums;
 using OpenQA.Selenium.Appium.Service;
+using OpenQA.Selenium.Appium.Service.Options;
+using OpenQA.Selenium.Appium.Android.UiAutomator;
 
-
+// Correct namespace and class definition
 namespace Scroll
 {
     [TestFixture]
     public class ScrollAndroidTest
     {
-        private AndroidDriver driver;
-        
+        private AndroidDriver _driver;
 
-         var serverUri = new Uri("http://127.0.0.1:4723"); // Use the CI server's URL if different
+        // [OneTimeSetUp] is used to initialize the setup once before all tests
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            // Define server URL and Appium options
+            var serverUri = new Uri("http://127.0.0.1:4723");
+            var androidOptions = new AppiumOptions
+            {
+                PlatformName = "Android",
+                AutomationName = "UIAutomator2",
+                DeviceName = "Android Emulator",
+                App = @"D:\ApiDemos-debug.apk" // Ensure this path is valid in your CI environment
+            };
 
-     var androidOptions = new AppiumOptions
-  {
-      PlatformName = "Android",
-      AutomationName = "UIAutomator2",
-      DeviceName = "Android Emulator",
-      App = @"D:\ApiDemos-debug.apk"
-  };
+            _driver = new AndroidDriver(serverUri, androidOptions);
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
+        }
 
-    _driver = new AndroidDriver(serverUri, androidOptions);
-    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
-}
         private void ScrollToText(string text)
         {
-            driver.FindElement(MobileBy.AndroidUIAutomator(
-                "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().text(\"" + text + "\"))"));
+            _driver.FindElement(MobileBy.AndroidUIAutomator(
+                $"new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().text(\"{text}\"))"));
         }
 
         [Test]
         public void ScrollTest()
         {
-            var views = driver.FindElement(MobileBy.AccessibilityId("Views"));
+            var views = _driver.FindElement(MobileBy.AccessibilityId("Views"));
             views.Click();
 
             ScrollToText("Lists");
 
-            var lists = driver.FindElement(MobileBy.AccessibilityId("Lists"));
+            var lists = _driver.FindElement(MobileBy.AccessibilityId("Lists"));
             Assert.That(lists, Is.Not.Null, "The 'Lists' element was not found after scrolling.");
 
             lists.Click();
 
-            var elementInList = driver.FindElement(MobileBy.AccessibilityId("10. Single choice list"));
+            var elementInList = _driver.FindElement(MobileBy.AccessibilityId("10. Single choice list"));
             Assert.That(elementInList, Is.Not.Null, "The expected element in the list was not found.");
         }
-
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            driver?.Quit();
-            appiumLocalService?.Dispose();
+            _driver?.Quit();
         }
     }
 }
