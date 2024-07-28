@@ -31,6 +31,12 @@ jobs:
         run: |
           npm install -g appium@2.11.2
           appium driver install uiautomator2
+
+      - name: Start Appium Server
+        run: |
+         appium &
+         sleep 5  # Give some time for the server to start
+    
           
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
