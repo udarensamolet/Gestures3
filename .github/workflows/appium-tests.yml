@@ -46,6 +46,28 @@ jobs:
       - name: Build the project
         run: dotnet build src/Gestures/Gestures.sln --configuration Release
 
+      - name: Create AVD
+        run: |
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "pixel"
+
+      - name: Start emulator
+        run: |
+          $ANDROID_HOME/emulator/emulator-headless -avd test -no-audio -no-window &
+          adb wait-for-device
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
+
+      - name: Wait for emulator to start
+        run: |
+          # Ensure the emulator is fully booted before running tests
+          bootanim=""
+          until [[ "$bootanim" =~ "stopped" ]]; do
+            bootanim=`adb -e shell getprop init.svc.bootanim 2>&1 &`
+            echo "Waiting for emulator to boot..."
+            sleep 5
+          done
+
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
 
