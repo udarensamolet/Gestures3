@@ -10,7 +10,7 @@ namespace Scroll
     public class ScrollAndroidTest
     {
         private AndroidDriver driver;
-        private AppiumLocalService appiumLocalService;
+        
 
          var serverUri = new Uri("http://127.0.0.1:4723"); // Use the CI server's URL if different
 
