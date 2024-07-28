@@ -36,10 +36,7 @@ jobs:
         run: |
          appium &
          sleep 10  # Give some time for the server to start
-    
-      - name: Install Selenium WebDriver
-        run: npm install selenium-webdriver
-          
+                   
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
 
@@ -100,7 +97,7 @@ jobs:
 
       - name: Verify Appium Server is running
         run: |
-          curl --silent --fail http://127.0.0.1:4723/status || exit 1
+          curl --silent --fail http://192.168.64.23:4723/status || exit 1
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
@@ -108,7 +105,7 @@ jobs:
       - name: Run tests
         run: dotnet test src/Gestures/Gestures.sln --logger:"trx;LogFileName=test_results.trx"
         env:
-          APPIUM_HOST: 127.0.0.1
+          APPIUM_HOST: 192.168.64.23
           APPIUM_PORT: 4723
 
       - name: Archive test results
