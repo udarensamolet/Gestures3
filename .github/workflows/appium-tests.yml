@@ -38,10 +38,10 @@ jobs:
         appium driver install uiautomator2
 
     - name: Install dependencies
-      run: dotnet restore src/YourSolution.sln  # Specify the path to your solution file
+      run: dotnet restore src/Gestures.sln  # Specify the path to your solution file
 
     - name: Build the project
-      run: dotnet build src/YourSolution.sln --configuration Release  # Specify the path to your solution file
+      run: dotnet build src/Gestures.sln --configuration Release  # Specify the path to your solution file
 
     - name: Copy APK to working directory
       run: cp ./apk/ApiDemos-debug.apk .
@@ -53,7 +53,7 @@ jobs:
         APPIUM_PORT: 4723
 
     - name: Run tests
-      run: dotnet test src/YourSolution.sln --logger:"trx;LogFileName=test_results.trx"  # Specify the path to your solution file
+      run: dotnet test src/Gestures.sln --logger:"trx;LogFileName=test_results.trx"  # Specify the path to your solution file
       env:
         APPIUM_HOST: 127.0.0.1
         APPIUM_PORT: 4723
