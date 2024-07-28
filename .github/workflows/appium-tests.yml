@@ -56,22 +56,30 @@ jobs:
         run: |
           $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect -no-snapshot-save &
           EMULATOR_PID=$!
-          timeout 5m adb wait-for-device
-          if ps -p $EMULATOR_PID > /dev/null; then
-            echo "Emulator started successfully"
-          else
+          for i in {1..30}; do
+            if adb wait-for-device; then
+              echo "Emulator started successfully"
+              break
+            else
+              echo "Waiting for emulator to start... ($i/30)"
+              sleep 10
+            fi
+          done
+          if ! adb shell getprop init.svc.bootanim | grep -q 'stopped'; then
             echo "Emulator failed to start"
             exit 1
           fi
-          adb shell getprop init.svc.bootanim
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
 
-      - name: Wait for emulator to start
+      - name: Wait for emulator to fully boot
         run: |
           bootanim=""
           failcounter=0
           timeout_in_sec=300
           until [[ "$bootanim" =~ "stopped" ]]; do
-            bootanim=`adb -e shell getprop init.svc.bootanim 2>&1 &`
+            bootanim=`adb -e shell getprop init.svc.bootanim 2>&1`
             if [[ "$bootanim" =~ "stopped" ]]; then
               echo "Emulator boot animation stopped."
               break
@@ -84,9 +92,6 @@ jobs:
             echo "Waiting for emulator to boot... ($failcounter seconds)"
             sleep 5
           done
-          adb shell settings put global window_animation_scale 0.0
-          adb shell settings put global transition_animation_scale 0.0
-          adb shell settings put global animator_duration_scale 0.0
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
