@@ -28,17 +28,17 @@ jobs:
           node-version: '16'  # Use a compatible node version
 
       - name: Upgrade npm
-        run: npm install -g npm@8  # Upgrade npm to the required version
+        run: npm install -g npm@latest  # Upgrade npm to the latest version
 
       - name: Install and Run Appium Server
         run: |
           npm install -g appium@2.0.0-beta.63
-          appium driver install uiautomator2@2.0.0
+          appium driver install uiautomator2
           nohup appium &
 
       - name: Set up Android SDK
         run: |
-          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
+          curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
           unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
           mkdir -p $HOME/android-sdk/cmdline-tools/latest
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest
