@@ -97,7 +97,7 @@ jobs:
 
       - name: Verify Appium Server is running
         run: |
-          curl --silent --fail http://192.168.64.23:4723/status || exit 1
+          curl --silent --fail http://192.168.64.24:4723/status || exit 1
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
@@ -105,7 +105,7 @@ jobs:
       - name: Run tests
         run: dotnet test src/Gestures/Gestures.sln --logger:"trx;LogFileName=test_results.trx"
         env:
-          APPIUM_HOST: 192.168.64.23
+          APPIUM_HOST: 192.168.64.24
           APPIUM_PORT: 4723
 
       - name: Archive test results
