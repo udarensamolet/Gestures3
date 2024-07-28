@@ -48,8 +48,8 @@ jobs:
 
       - name: Download system image and create AVD
         run: |
-          yes | sdkmanager --install "system-images;android-30;google_apis;x86_64"
-          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "pixel"
+          yes | sdkmanager --install "system-images;android-30;google_apis;arm64-v8a"
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;arm64-v8a" --device "pixel"
 
       - name: Start emulator
         run: |
