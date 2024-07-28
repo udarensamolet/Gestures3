@@ -38,16 +38,21 @@ jobs:
           npm install -g appium@2.11.2
           appium driver install uiautomator2
 
-      - name: Start Appium Server
+      - name: Start Appium Server with CORS
         run: |
-          appium --port $APPIUM_TEST_SERVER_PORT --address $APPIUM_TEST_SERVER_HOST --allow-cors &
+          IP_ADDRESS=$(ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | head -n 1)
+          echo "Appium server IP: $IP_ADDRESS"
+          appium --allow-cors &
           sleep 10  # Wait for the server to start
+        shell: bash
         env:
-          APPIUM_TEST_SERVER_PORT: ${{ env.APPIUM_TEST_SERVER_PORT }}
-          APPIUM_TEST_SERVER_HOST: ${{ env.APPIUM_TEST_SERVER_HOST }}
+          APPIUM_SERVER_URI: http://$IP_ADDRESS:4723
 
       - name: Verify Appium Server is running
-        run: curl --silent --fail "http://${{ env.APPIUM_TEST_SERVER_HOST }}:${{ env.APPIUM_TEST_SERVER_PORT }}/status" || exit 1
+        run: |
+          curl --silent --fail $APPIUM_SERVER_URI/status || exit 1
+        env:
+          APPIUM_SERVER_URI: ${{ steps.Start_Appium_Server_with_CORS.outputs.IP_ADDRESS }}:4723
 
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
