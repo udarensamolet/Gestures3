@@ -69,7 +69,7 @@ jobs:
         run: |
           bootanim=""
           failcounter=0
-          timeout_in_sec=300
+          timeout_in_sec=150
           until [[ "$bootanim" =~ "stopped" ]]; do
             bootanim=`adb shell getprop init.svc.bootanim 2>&1`
             if [[ "$bootanim" =~ "stopped" ]]; then
