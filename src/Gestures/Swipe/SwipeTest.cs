@@ -11,7 +11,7 @@ namespace Swipe
     public class SwipeAndroidTest
     {
         private AndroidDriver _driver;
-        private AppiumLocalService _appiumLocalService;
+       
 
         [OneTimeSetUp]
         public void SetUp()
