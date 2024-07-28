@@ -25,10 +25,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Use a compatible node version
-
-      - name: Upgrade npm
-        run: npm install -g npm@latest  # Upgrade npm to the latest version
+          node-version: '18'  # Use a compatible node version
 
       - name: Install and Run Appium Server
         run: |
