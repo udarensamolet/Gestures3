@@ -27,13 +27,6 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          api-level: 30
-          build-tools: 30.0.3
-          ndk: 21.4.7075529
-
       - name: Install and Run Appium Server
         run: |
           npm install -g appium@2.0.0-beta.63
@@ -46,14 +39,22 @@ jobs:
       - name: Build the project
         run: dotnet build src/Gestures/Gestures.sln --configuration Release
 
-      - name: Download system image and create AVD
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-levels: 30
+          build-tools: 30.0.3
+
+      - name: Download system image
         run: |
-          yes | sdkmanager --install "system-images;android-30;google_apis;arm64-v8a"
-          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;arm64-v8a" --device "pixel"
+          yes | sdkmanager --install "system-images;android-30;default;x86_64"
+
+      - name: Create AVD
+        run: echo "no" | avdmanager create avd -n test -k "system-images;android-30;default;x86_64" --device "pixel"
 
       - name: Start emulator
         run: |
-          $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -no-boot-anim &
+          $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
           adb wait-for-device
           adb shell settings put global window_animation_scale 0.0
           adb shell settings put global transition_animation_scale 0.0
