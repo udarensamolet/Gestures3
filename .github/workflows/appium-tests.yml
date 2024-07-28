@@ -16,6 +16,131 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      # Checkout the repository to the runner.
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      # Set up .NET 6, which is required for your project.
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      # Set up Node.js 18, necessary for Appium.
+
+      - name: Install and Run Appium Server
+        run: |
+          npm install -g appium@2.0.0-beta.63
+          appium driver install uiautomator2
+          nohup appium & echo $! > appium_pid.txt
+      # Install Appium globally and start the server in the background. 
+      # Save the process ID to a file for potential later use.
+
+      - name: Install dependencies
+        run: dotnet restore src/Gestures/Gestures.sln
+      # Restore .NET project dependencies.
+
+      - name: Build the project
+        run: dotnet build src/Gestures/Gestures.sln --configuration Release
+      # Build the .NET project in Release configuration.
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-levels: 30
+          build-tools: 30.0.3
+      # Set up Android SDK with the specified API level and build tools.
+
+      - name: Download x86 system image
+        run: sdkmanager --install "system-images;android-30;google_apis;x86"
+      # Download the required system image for the emulator.
+
+      - name: Create AVD
+        run: echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --device "pixel"
+      # Create an Android Virtual Device (AVD) for the emulator.
+
+      - name: Make gradlew executable
+        run: chmod +x ./Eventures.AndroidApp/gradlew
+      # Make the Gradle wrapper script executable.
+
+      - name: Start emulator
+        run: |
+          $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect -no-boot-anim -no-snapshot-save &
+          EMULATOR_PID=$!
+          timeout 5m adb wait-for-device
+          if ps -p $EMULATOR_PID > /dev/null; then
+            echo "Emulator started successfully"
+          else
+            echo "Emulator failed to start"
+            exit 1
+          fi
+          adb shell getprop init.svc.bootanim
+      # Start the emulator in headless mode and save the process ID. 
+      # Wait for ADB to connect to the device.
+
+      - name: Wait for emulator to fully boot
+        run: |
+          bootanim=""
+          failcounter=0
+          timeout_in_sec=600  # Increase timeout if necessary
+          until [[ "$bootanim" =~ "stopped" ]]; do
+            bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
+            if [[ "$bootanim" =~ "stopped" ]]; then
+              echo "Emulator boot animation stopped."
+              break
+            fi
+            ((failcounter += 5))
+            if [[ $failcounter -gt $timeout_in_sec ]]; then
+              echo "Emulator boot process timed out."
+              exit 1
+            fi
+            echo "Waiting for emulator to boot... ($failcounter seconds)"
+            sleep 5
+          done
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
+      # Wait for the emulator to finish booting by monitoring the boot animation property.
+      # Disable animations on the emulator to speed up tests.
+
+      - name: Copy APK to working directory
+        run: cp ./apk/ApiDemos-debug.apk .
+      # Copy the APK file needed for testing to the current directory.
+
+      - name: Run tests
+        run: dotnet test src/Gestures/Gestures.sln --logger:"trx;LogFileName=test_results.trx"
+        env:
+          APPIUM_HOST: 127.0.0.1
+          APPIUM_PORT: 4723
+      # Run the .NET tests using the specified solution and logger. Set environment variables for Appium.
+
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: '**/*.trx'
+      # Always archive test results, regardless of success or failure.
+name: Appium CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  appium-test:
+    runs-on: macos-12
+    name: Appium Test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
