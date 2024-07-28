@@ -50,9 +50,11 @@ jobs:
 
       - name: Verify Appium Server is running
         run: |
-          curl --silent --fail $APPIUM_SERVER_URI/status || exit 1
+          echo "Verifying server at $APPIUM_SERVER_URI"
+          curl --silent --fail "$APPIUM_SERVER_URI/status" || exit 1
         env:
-          APPIUM_SERVER_URI: ${{ steps.Start_Appium_Server_with_CORS.outputs.IP_ADDRESS }}:4723
+          APPIUM_SERVER_URI: ${{ env.APPIUM_SERVER_URI }}
+
 
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
