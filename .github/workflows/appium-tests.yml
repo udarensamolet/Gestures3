@@ -27,8 +27,11 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install and Run Appium Server
-        uses: moatazeldebsy/appium-server-github-action@V1.0.7
+      - name: Install Appium and Drivers
+        run: |
+          npm install -g appium@2.0.0-beta.63
+          appium driver install uiautomator2
+          nohup appium &
 
       - name: Set up Android SDK
         run: |
