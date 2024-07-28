@@ -18,7 +18,7 @@ namespace SeekBar
     public class SeekBarTests
     {
         private AppiumDriver _driver;
-        private AppiumLocalService _appiumLocalService;
+        
 
         [OneTimeSetUp]
         public void SetUp()
