@@ -80,7 +80,7 @@ namespace SeekBar
         public void TearDown()
         {
             _driver.Quit();
-            _appiumLocalService.Dispose();
+           
         }
     }
 }
