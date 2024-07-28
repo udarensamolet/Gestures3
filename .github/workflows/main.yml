@@ -71,7 +71,7 @@ jobs:
           failcounter=0
           timeout_in_sec=300
           until [[ "$bootanim" =~ "stopped" ]]; do
-            bootanim=adb shell getprop init.svc.bootanim 2>&1
+            bootanim=`adb shell getprop init.svc.bootanim 2>&1`
             if [[ "$bootanim" =~ "stopped" ]]; then
               echo "Emulator boot animation stopped."
               break
