@@ -12,29 +12,18 @@ namespace Scroll
         private AndroidDriver driver;
         private AppiumLocalService appiumLocalService;
 
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-            appiumLocalService = new AppiumServiceBuilder()
-                .WithIPAddress("127.0.0.1")
-                .UsingPort(4723)
-                .Build();
-            appiumLocalService.Start();
+         var serverUri = new Uri("http://127.0.0.1:4723/wd/hub"); // Use the CI server's URL if different
 
-            var androidOptions = new AppiumOptions
-            {
-                PlatformName = "Android",
-                AutomationName = "UIAutomator2",
-                DeviceName = "Pixel_7",
-                App = @"./ApiDemos-debug.apk"
-            };
+    var androidOptions = new AppiumOptions();
+    androidOptions.PlatformName = "Android";
+    androidOptions.AutomationName = "UIAutomator2";
+    androidOptions.DeviceName = "Android Emulator";
+    androidOptions.App = @"D:\ApiDemos-debug.apk";
+    androidOptions.AddAdditionalCapability(MobileCapabilityType.NewCommandTimeout, 300); // Set a generous timeout
 
-
-            driver = new AndroidDriver(appiumLocalService.ServiceUrl, androidOptions);
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-            
-        }
+    _driver = new AndroidDriver(serverUri, androidOptions);
+    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
+}
         private void ScrollToText(string text)
         {
             driver.FindElement(MobileBy.AndroidUIAutomator(
