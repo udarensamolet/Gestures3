@@ -16,7 +16,7 @@ namespace Swipe
         [OneTimeSetUp]
         public void SetUp()
         {
-            var serverUri = new Uri("http://192.168.64.23:4723"); // Use the CI server's URL if different
+            var serverUri = new Uri("http://192.168.64.24:4723"); // Use the CI server's URL if different
             var appPath = Environment.GetEnvironmentVariable("APK_PATH") ?? "./apk/ApiDemos-debug.apk";
 
       var androidOptions = new AppiumOptions
