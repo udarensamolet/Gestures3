@@ -25,12 +25,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'  # Use a compatible node version
 
-      - name: Install Appium and Drivers
+      - name: Upgrade npm
+        run: npm install -g npm@8  # Upgrade npm to the required version
+
+      - name: Install and Run Appium Server
         run: |
           npm install -g appium@2.0.0-beta.63
-          appium driver install uiautomator2
+          appium driver install uiautomator2@2.0.0
           nohup appium &
 
       - name: Set up Android SDK
