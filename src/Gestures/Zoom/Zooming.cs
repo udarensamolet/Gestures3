@@ -14,7 +14,7 @@ namespace ZoomGestures
     public class ZoomTests
     {
         private AndroidDriver _driver;
-        private AppiumLocalService _appiumLocalService;
+        
 
         [OneTimeSetUp]
         public void SetUp()
