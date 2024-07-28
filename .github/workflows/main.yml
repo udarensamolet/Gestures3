@@ -1,0 +1,61 @@
+name: Appium CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  appium-test:
+    runs-on: macos-12
+    name: Appium Test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install and Run Appium Server
+        run: |
+          npm install -g appium@2.0.0-beta.63
+          appium driver install uiautomator2
+          nohup appium &
+          sleep 10  # Ensure Appium server has enough time to start
+          curl --silent --fail http://127.0.0.1:4723/wd/hub/status || exit 1
+
+      - name: Install dependencies
+        run: dotnet restore src/Gestures/Gestures.sln
+
+      - name: Build the project
+        run: dotnet build src/Gestures/Gestures.sln --configuration Release
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-levels: 30
+          build-tools: 30.0.3
+
+      - name: Run the Android emulator, then start the Appium tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: dotnet test src/Gestures/Gestures.sln --no-build --verbosity normal
+
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: '**/*.trx'
