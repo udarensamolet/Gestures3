@@ -14,18 +14,19 @@ namespace Scroll
     {
         private AndroidDriver _driver;
 
-        // [OneTimeSetUp] is used to initialize the setup once before all tests
+       
         [OneTimeSetUp]
         public void SetUp()
         {
             // Define server URL and Appium options
             var serverUri = new Uri("http://127.0.0.1:4723");
+            var appPath = Environment.GetEnvironmentVariable("APK_PATH") ?? "./apk/ApiDemos-debug.apk";
             var androidOptions = new AppiumOptions
             {
                 PlatformName = "Android",
                 AutomationName = "UIAutomator2",
                 DeviceName = "Android Emulator",
-                App = @"D:\ApiDemos-debug.apk" // Ensure this path is valid in your CI environment
+                App = appPath // Ensure this path is valid in your CI environment
             };
 
             _driver = new AndroidDriver(serverUri, androidOptions);
