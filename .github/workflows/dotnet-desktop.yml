@@ -35,8 +35,10 @@ jobs:
       - name: Start Appium Server
         run: |
          appium &
-         sleep 5  # Give some time for the server to start
+         sleep 10  # Give some time for the server to start
     
+      - name: Install Selenium WebDriver
+        run: npm install selenium-webdriver
           
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
