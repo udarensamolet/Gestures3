@@ -15,7 +15,7 @@ namespace DragAndDrop
     public class DragDropTest
     {
         private AndroidDriver _driver;
-        private AppiumLocalService _appiumLocalService;
+       
 
         [OneTimeSetUp]
         public void SetUp()
