@@ -40,11 +40,12 @@ jobs:
       - name: Build the project
         run: dotnet build src/Gestures/Gestures.sln --configuration Release
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          api-levels: 34
-          build-tools: 34.0.0
+      - name: Install available system image and build tools
+        run: |
+         sdkmanager --list || true  # List available packages
+         sdkmanager --install "build-tools;34.0.0" "system-images;android-33;google_apis;x86" || \
+         sdkmanager --install "system-images;android-32;google_apis;x86"
+  
 
       - name: Download x86 system image
         run: |
