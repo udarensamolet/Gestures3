@@ -43,7 +43,7 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
         with:
-          api-levels: 30
+          api-level: 30  # Use 'api-level' instead of 'api-levels'
           build-tools: 30.0.3
 
       - name: Download x86 system image
@@ -72,7 +72,7 @@ jobs:
         run: |
           bootanim=""
           failcounter=0
-          timeout_in_sec=300
+          timeout_in_sec=600  # Increased timeout
           until [[ "$bootanim" =~ "stopped" ]]; do
             bootanim=`adb shell getprop init.svc.bootanim 2>&1`
             if [[ "$bootanim" =~ "stopped" ]]; then
