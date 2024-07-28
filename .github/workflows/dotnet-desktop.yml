@@ -109,13 +109,21 @@ jobs:
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
 
+      - name: Extract and Set Host and Port
+        run: |
+          echo "Extracting host and port from APPIUM_SERVER_URI"
+          echo "APPIUM_HOST=$(echo $APPIUM_SERVER_URI | sed -e 's|^[^:]*://||' -e 's|:.*$||')" >> $GITHUB_ENV
+          echo "APPIUM_PORT=$(echo $APPIUM_SERVER_URI | sed -e 's|.*:||')" >> $GITHUB_ENV
+        shell: bash
+        env:
+          APPIUM_SERVER_URI: ${{ env.APPIUM_SERVER_URI }}
+
       - name: Run tests
         run: dotnet test src/Gestures/Gestures.sln --logger:"trx;LogFileName=test_results.trx"
         env:
-         APPIUM_SERVER_URI: ${{ env.APPIUM_SERVER_URI }}
-         APPIUM_HOST: ${{ env.APPIUM_SERVER_URI | split:"://" | last | split:":" | first }}
-         APPIUM_PORT: ${{ env.APPIUM_SERVER_URI | split:":" | last }}
-         APK_PATH: ./apk/ApiDemos-debug.apk
+          APPIUM_HOST: ${{ env.APPIUM_HOST }}
+          APPIUM_PORT: ${{ env.APPIUM_PORT }}
+          APK_PATH: ./apk/ApiDemos-debug.apk
 
       - name: Archive test results
         if: always()
