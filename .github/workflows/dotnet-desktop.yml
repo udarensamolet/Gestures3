@@ -27,6 +27,12 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'    
+
       - name: Install and Run Appium Server
         run: |
           npm install -g appium@2.11.2
