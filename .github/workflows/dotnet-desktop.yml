@@ -33,15 +33,24 @@ jobs:
           appium driver install uiautomator2
 
       - name: Start Appium Server with CORS
+        id: start_appium
         run: |
-          IP_ADDRESS=$(ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | head -n 1)
+          IP_ADDRESS=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print $2}' | head -n 1)
           echo "Appium server IP: $IP_ADDRESS"
+          echo "APPIUM_SERVER_URI=http://$IP_ADDRESS:4723" >> $GITHUB_ENV
           appium --allow-cors &
           sleep 10  # Wait for the server to start
-        shell: bash
+
+      - name: Verify Appium Server is running
+        run: |
+          echo "Verifying server at $APPIUM_SERVER_URI"
+          curl --silent --fail "$APPIUM_SERVER_URI/status" || exit 1
         env:
-          APPIUM_SERVER_URI: http://$IP_ADDRESS:4723
-                   
+          APPIUM_SERVER_URI: ${{ env.APPIUM_SERVER_URI }}
+
+      - name: Copy APK to working directory
+        run: cp ./apk/ApiDemos-debug.apk .
+
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
 
@@ -99,15 +108,6 @@ jobs:
           adb shell settings put global transition_animation_scale 0.0
           adb shell settings put global animator_duration_scale 0.0
           adb shell input keyevent 82  # Unlock screen
-
-      - name: Verify Appium Server is running
-        run: |
-          curl --silent --fail $APPIUM_SERVER_URI/status || exit 1
-        env:
-          APPIUM_SERVER_URI: ${{ steps.Start_Appium_Server_with_CORS.outputs.IP_ADDRESS }}:4723
-
-      - name: Copy APK to working directory
-        run: cp ./apk/ApiDemos-debug.apk .
 
       - name: Extract and Set Host and Port
         run: |
