@@ -15,25 +15,21 @@ namespace DragAndDrop
     public class DragDropTest
     {
         private AndroidDriver _driver;
-       
 
         [OneTimeSetUp]
         public void SetUp()
         {
             var serverUri = new Uri("http://127.0.0.1:4723"); // Use the CI server's URL if different
-
-     var androidOptions = new AppiumOptions
-  {
-      PlatformName = "Android",
-      AutomationName = "UIAutomator2",
-      DeviceName = "Android Emulator",
-      App = @"D:\ApiDemos-debug.apk"
-  };
-    _driver = new AndroidDriver(serverUri, androidOptions);
-    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
-}
-
-
+            var androidOptions = new AppiumOptions
+            {
+                PlatformName = "Android",
+                AutomationName = "UIAutomator2",
+                DeviceName = "Android Emulator",
+                App = @"D:\ApiDemos-debug.apk" // Ensure this path is valid in your CI environment
+            };
+            _driver = new AndroidDriver(serverUri, androidOptions);
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
+        }
 
         [Test]
         public void DragAndDropTest()
@@ -47,7 +43,6 @@ namespace DragAndDrop
             var drag = _driver.FindElement(By.Id("drag_dot_1"));
             var drop = _driver.FindElement(By.Id("drag_dot_2"));
 
-
             // Perform the drag and drop action using JavaScript ExecutScript (mobile: dragGesture)
             var scriptArgs = new Dictionary<string, object>
             {
@@ -57,10 +52,8 @@ namespace DragAndDrop
                 { "speed", 2500 } // Optional speed parameter
             };
 
-
             _driver.ExecuteScript("mobile: dragGesture", scriptArgs);
 
-            
             // Assertion: Verify the text indicating a successful drop
             var dropSuccessMessage = _driver.FindElement(By.Id("drag_result_text"));
             Assert.That(dropSuccessMessage.Text, Is.EqualTo("Dropped!"), "The drag and drop action did not complete successfully.");
@@ -70,7 +63,7 @@ namespace DragAndDrop
         public void TearDown()
         {
             _driver?.Quit();
-            _appiumLocalService?.Dispose();
+            // Removed the _appiumLocalService reference as it is not used in this context
         }
     }
 }
