@@ -19,7 +19,7 @@ namespace Scroll
         public void SetUp()
         {
             // Define server URL and Appium options
-            var serverUri = new Uri("http://127.0.0.1:4723");
+            var serverUri = new Uri("http://192.168.64.23");
             var appPath = Environment.GetEnvironmentVariable("APK_PATH") ?? "./apk/ApiDemos-debug.apk";
             var androidOptions = new AppiumOptions
             {
