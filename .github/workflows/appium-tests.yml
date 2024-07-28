@@ -20,12 +20,12 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.x'  # Specify your required .NET version
+          dotnet-version: '6.0.x'
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Use a compatible node version
+          node-version: '18'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
@@ -46,8 +46,9 @@ jobs:
       - name: Build the project
         run: dotnet build src/Gestures/Gestures.sln --configuration Release
 
-      - name: Create AVD
+      - name: Download system image and create AVD
         run: |
+          yes | sdkmanager --install "system-images;android-30;google_apis;x86_64"
           echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "pixel"
 
       - name: Start emulator
@@ -60,7 +61,6 @@ jobs:
 
       - name: Wait for emulator to start
         run: |
-          # Ensure the emulator is fully booted before running tests
           bootanim=""
           until [[ "$bootanim" =~ "stopped" ]]; do
             bootanim=`adb -e shell getprop init.svc.bootanim 2>&1 &`
