@@ -27,27 +27,18 @@ jobs:
         with:
           node-version: '18'  # Use a compatible node version
 
-      - name: Install wget
-        run: sudo apt-get update && sudo apt-get install -y wget
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: 30
+          build-tools: 30.0.3
+          ndk: 21.4.7075529
 
       - name: Install and Run Appium Server
         run: |
           npm install -g appium@2.0.0-beta.63
           appium driver install uiautomator2
           nohup appium &
-
-      - name: Set up Android SDK
-        run: |
-          wget -O commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-          unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
-          mkdir -p $HOME/android-sdk/cmdline-tools/latest
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest
-          echo "sdk.dir=$HOME/android-sdk" > local.properties
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-30" "build-tools;30.0.3"
-        env:
-          ANDROID_HOME: $HOME/android-sdk
-          PATH: $HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/emulator:$PATH
 
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
