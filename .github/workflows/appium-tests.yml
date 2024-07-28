@@ -39,19 +39,19 @@ jobs:
 
     - name: Install Android SDK
       run: |
-        sudo apt-get update
-        sudo apt-get install -y openjdk-11-jdk wget unzip
+        apt-get update
+        apt-get install -y openjdk-11-jdk wget unzip
         wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
         unzip commandlinetools.zip -d cmdline-tools
-        sudo mkdir -p /usr/local/lib/android/sdk
-        sudo mv cmdline-tools /usr/local/lib/android/sdk/cmdline-tools
-        export ANDROID_HOME=/usr/local/lib/android/sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
-        yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses
-        yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-30" "build-tools;30.0.3" "emulator"
+        mkdir -p $HOME/android-sdk/cmdline-tools
+        mv cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "emulator"
       env:
-        ANDROID_HOME: /usr/local/lib/android/sdk
-        PATH: /usr/local/lib/android/sdk/cmdline-tools/bin:/usr/local/lib/android/sdk/platform-tools:/usr/local/lib/android/sdk/emulator:$PATH
+        ANDROID_HOME: $HOME/android-sdk
+        PATH: $HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/emulator:$PATH
 
     - name: Install dependencies
       run: dotnet restore src/Gestures/Gestures.sln  # Specify the path to your solution file
