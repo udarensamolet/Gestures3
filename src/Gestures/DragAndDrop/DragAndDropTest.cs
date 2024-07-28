@@ -19,7 +19,7 @@ namespace DragAndDrop
         [OneTimeSetUp]
         public void SetUp()
         {
-            var serverUri = new Uri(Environment.GetEnvironmentVariable("APPIUM_SERVER_URI") ?? "127.0.0.1:4723");
+            var serverUri = new Uri(Environment.GetEnvironmentVariable("APPIUM_SERVER_URI") ?? "http://192.168.64.24:4723:4723");
             var appPath = Environment.GetEnvironmentVariable("APK_PATH") ?? "./apk/ApiDemos-debug.apk";
             var androidOptions = new AppiumOptions
             {
