@@ -1,0 +1,66 @@
+name: Appium .NET Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: selenium/standalone-chrome
+        ports:
+          - 4444:4444
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'  # Specify your required .NET version
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Install Appium and Drivers
+      run: |
+        npm install -g appium
+        appium driver install uiautomator2
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build the project
+      run: dotnet build --configuration Release
+
+    - name: Copy APK to working directory
+      run: cp ./apk/ApiDemos-debug.apk .
+
+    - name: Start Appium server
+      run: appium --log-level error &
+      env:
+        APPIUM_HOST: 127.0.0.1
+        APPIUM_PORT: 4723
+
+    - name: Run tests
+      run: dotnet test --logger:"trx;LogFileName=test_results.trx"
+      env:
+        APPIUM_HOST: 127.0.0.1
+        APPIUM_PORT: 4723
+
+    - name: Archive test results
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: '**/*.trx'
