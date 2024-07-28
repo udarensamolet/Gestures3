@@ -54,7 +54,7 @@ jobs:
 
       - name: Start emulator
         run: |
-          $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect -no-snapshot-save &
+          $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect -no-snapshot -no-snapshot-save &
           EMULATOR_PID=$!
           for i in {1..30}; do
             if adb wait-for-device; then
@@ -65,13 +65,7 @@ jobs:
               sleep 10
             fi
           done
-          if ! adb shell getprop init.svc.bootanim | grep -q 'stopped'; then
-            echo "Emulator failed to start"
-            exit 1
-          fi
-          adb shell settings put global window_animation_scale 0.0
-          adb shell settings put global transition_animation_scale 0.0
-          adb shell settings put global animator_duration_scale 0.0
+          adb shell getprop init.svc.bootanim
 
       - name: Wait for emulator to fully boot
         run: |
@@ -92,6 +86,9 @@ jobs:
             echo "Waiting for emulator to boot... ($failcounter seconds)"
             sleep 5
           done
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
