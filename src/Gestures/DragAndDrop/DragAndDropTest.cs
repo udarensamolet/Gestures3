@@ -28,6 +28,8 @@ namespace DragAndDrop
                 DeviceName = "pixel",
                 App = appPath
             };
+
+            var commandTimeout = TimeSpan.FromMinutes(3); // or any other appropriate duration
             _driver = new AndroidDriver(serverUri, androidOptions);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
         }
