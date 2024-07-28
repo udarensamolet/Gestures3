@@ -27,6 +27,9 @@ jobs:
         with:
           node-version: '18'  # Use a compatible node version
 
+      - name: Install wget
+        run: sudo apt-get install -y wget
+
       - name: Install and Run Appium Server
         run: |
           npm install -g appium@2.0.0-beta.63
@@ -35,7 +38,7 @@ jobs:
 
       - name: Set up Android SDK
         run: |
-          curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          wget -O commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
           unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
           mkdir -p $HOME/android-sdk/cmdline-tools/latest
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest
