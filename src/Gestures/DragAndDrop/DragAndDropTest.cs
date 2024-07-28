@@ -25,7 +25,7 @@ namespace DragAndDrop
             {
                 PlatformName = "Android",
                 AutomationName = "UIAutomator2",
-                DeviceName = "Android Emulator",
+                DeviceName = "pixel",
                 App = appPath
             };
             _driver = new AndroidDriver(serverUri, androidOptions);
