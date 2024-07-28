@@ -34,8 +34,13 @@ jobs:
 
       - name: Start Appium Server with CORS
         run: |
+          IP_ADDRESS=$(ifconfig | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | head -n 1)
+          echo "Appium server IP: $IP_ADDRESS"
           appium --allow-cors &
-          sleep 10  # Adjust the sleep duration based on how long it takes for the server to be ready
+          sleep 10  # Wait for the server to start
+        shell: bash
+        env:
+          APPIUM_SERVER_URI: http://$IP_ADDRESS:4723
                    
       - name: Install dependencies
         run: dotnet restore src/Gestures/Gestures.sln
@@ -97,7 +102,9 @@ jobs:
 
       - name: Verify Appium Server is running
         run: |
-          curl --silent --fail http://192.168.64.24:4723/status || exit 1
+          curl --silent --fail $APPIUM_SERVER_URI/status || exit 1
+        env:
+          APPIUM_SERVER_URI: ${{ steps.Start_Appium_Server_with_CORS.outputs.IP_ADDRESS }}:4723
 
       - name: Copy APK to working directory
         run: cp ./apk/ApiDemos-debug.apk .
@@ -105,8 +112,10 @@ jobs:
       - name: Run tests
         run: dotnet test src/Gestures/Gestures.sln --logger:"trx;LogFileName=test_results.trx"
         env:
-          APPIUM_HOST: 192.168.64.24
-          APPIUM_PORT: 4723
+         APPIUM_SERVER_URI: ${{ env.APPIUM_SERVER_URI }}
+         APPIUM_HOST: ${{ env.APPIUM_SERVER_URI | split:"://" | last | split:":" | first }}
+         APPIUM_PORT: ${{ env.APPIUM_SERVER_URI | split:":" | last }}
+         APK_PATH: ./apk/ApiDemos-debug.apk
 
       - name: Archive test results
         if: always()
