@@ -29,11 +29,9 @@ namespace DragAndDrop
                 App = appPath,
                 };
 
-            
-            androidOptions.AddAdditionalAppiumOption("newSessionTimeout", 240);
-            
-            _driver = new AndroidDriver(serverUri, androidOptions);
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40); // Increase implicit wait
+                                   
+    _driver = new AndroidDriver(serverUri, androidOptions, TimeSpan.FromMinutes(5)); // Increase command timeout
+    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
         }
 
         [Test]
