@@ -26,10 +26,11 @@ namespace DragAndDrop
                 PlatformName = "Android",
                 AutomationName = "UIAutomator2",
                 DeviceName = "pixel",
-                App = appPath
-            };
+                App = appPath,
+                };
 
-            var commandTimeout = TimeSpan.FromMinutes(3); // or any other appropriate duration
+            //var commandTimeout = TimeSpan.FromMinutes(3); // or any other appropriate duration
+            androidOptions.AddAdditionalCapability("newCommandTimeout", 120);
             _driver = new AndroidDriver(serverUri, androidOptions);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
         }
