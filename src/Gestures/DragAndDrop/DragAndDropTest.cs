@@ -3,11 +3,9 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.Enums;
-using OpenQA.Selenium.Appium.Service;
 using OpenQA.Selenium.Appium.MultiTouch;
 using System;
-using OpenQA.Selenium.Interactions;
-using System.Drawing;
+using System.Collections.Generic;
 
 namespace DragAndDrop
 {
@@ -19,7 +17,7 @@ namespace DragAndDrop
         [OneTimeSetUp]
         public void SetUp()
         {
-            var serverUri = new Uri(Environment.GetEnvironmentVariable("APPIUM_SERVER_URI") ?? "http://192.168.64.24:4723:4723");
+            var serverUri = new Uri(Environment.GetEnvironmentVariable("APPIUM_SERVER_URI") ?? "http://192.168.64.24:4723");
             var appPath = Environment.GetEnvironmentVariable("APK_PATH") ?? "./apk/ApiDemos-debug.apk";
             var androidOptions = new AppiumOptions
             {
@@ -27,11 +25,11 @@ namespace DragAndDrop
                 AutomationName = "UIAutomator2",
                 DeviceName = "pixel",
                 App = appPath,
-                };
+            };
 
-                                   
-    _driver = new AndroidDriver(serverUri, androidOptions, TimeSpan.FromMinutes(5)); // Increase command timeout
-    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+            // Ensure to use a version where commandTimeout is correctly handled
+            _driver = new AndroidDriver(serverUri, androidOptions, TimeSpan.FromMinutes(5)); 
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
         }
 
         [Test]
@@ -66,7 +64,6 @@ namespace DragAndDrop
         public void TearDown()
         {
             _driver?.Quit();
-            // Removed the _appiumLocalService reference as it is not used in this context
         }
     }
 }
