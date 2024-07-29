@@ -29,8 +29,8 @@ namespace Scroll
                 App = appPath // Ensure this path is valid in your CI environment
             };
 
-            _driver = new AndroidDriver(serverUri, androidOptions);
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
+             _driver = new AndroidDriver(serverUri, androidOptions, TimeSpan.FromMinutes(5)); // Increase command timeout
+             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
         }
 
         private void ScrollToText(string text)
