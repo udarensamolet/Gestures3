@@ -115,6 +115,12 @@ jobs:
           adb shell settings put global animator_duration_scale 0.0
           adb shell input keyevent 82  # Unlock screen
 
+      - name: Ensure ADB is connected and device is ready
+        run: |
+          adb devices
+          adb wait-for-device
+          adb shell getprop init.svc.bootanim | grep -q 'stopped' || exit 1
+
       - name: Extract and Set Host and Port
         run: |
           echo "Extracting host and port from APPIUM_SERVER_URI"
