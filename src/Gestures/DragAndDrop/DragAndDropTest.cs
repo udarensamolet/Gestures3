@@ -29,8 +29,8 @@ namespace DragAndDrop
                 App = appPath,
                 };
 
-            //var commandTimeout = TimeSpan.FromMinutes(3); // or any other appropriate duration
-            androidOptions.AddAdditionalCapability("newCommandTimeout", 120);
+            var commandTimeout = TimeSpan.FromMinutes(3); // or any other appropriate duration
+            
             _driver = new AndroidDriver(serverUri, androidOptions);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
         }
