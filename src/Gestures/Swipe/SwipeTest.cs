@@ -27,8 +27,8 @@ namespace Swipe
       App = appPath
   };
 
-    _driver = new AndroidDriver(serverUri, androidOptions);
-    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20); // Increase implicit wait
+     _driver = new AndroidDriver(serverUri, androidOptions, TimeSpan.FromMinutes(5)); // Increase command timeout
+    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
 }
 
         [Test]
